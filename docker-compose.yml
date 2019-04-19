@@ -1,0 +1,6 @@
+version: '2'
+services:
+  algr:
+    build: .
+    volumes:
+      - ./:/app:delegated #网站目录
