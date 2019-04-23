@@ -5,7 +5,7 @@ Target:
     [ ] 两个有序链表的合并
     [x] 删除链表倒数第n个节点
     [x] 求链表的中间节点
-    [ ] LRU算法
+    [x] LRU算法
 */
 #include <iostream>
 using namespace std;
@@ -22,7 +22,7 @@ class SList {
     ~SList();
     bool isFull();
     
-    void insertHead(DateType date);
+    int insertHead(DateType date);
     ListNode * find(DateType date);
     void deleteDescOrder(int order);
     void reversal();
@@ -62,15 +62,6 @@ void SList::deleteElem(ListNode ** current)
     *current = index->next;
     delete index;
     this->length -= 1;
-}
-
-void SList::insertHead(DateType date)
-{
-    ListNode * tmp = this->head;
-    this->head = new ListNode;
-    this->head->date = date;
-    this->head->next = tmp;
-    this->length += 1;
 }
 
 
@@ -154,6 +145,37 @@ void SList::deleteDescOrder(int order)
     delete current;
     this->length -= 1;
 }
+// LRU 算法
+int SList::insertHead(DateType date)
+{
+    ListNode * pre = this->head;
+    ListNode * tmp;
+    int count = 0;
+    if (pre) {
+        if (pre->date == date)
+            return 1;
+        // 查找到要删除的节点
+        while(pre->next) {
+            if (pre->next->date == date) {
+                //删除之前的节点
+                tmp = pre->next;
+                pre->next = tmp->next;
+                delete tmp;
+                this->length -= 1;
+                break;
+            }
+            pre = pre->next;
+            count += 1;
+        }
+    }
+    // 插入首节点
+    tmp = this->head;
+    this->head = new ListNode;
+    this->head->date = date;
+    this->head->next = tmp;
+    this->length += 1;
+    return count;
+}
 
 int main(int argc, char const *argv[])
 {
@@ -184,7 +206,16 @@ int main(int argc, char const *argv[])
     // list.print();
 
     // 测试查找中点
-    ListNode * mid = list.findMid();
-    cout<< "Middle Node Value :" << mid->date<<endl;
+    // ListNode * mid = list.findMid();
+    // cout<< "Middle Node Value :" << mid->date<<endl;
+
+    // 测试LRU算法
+    while(1) {
+        cin>>count;
+        list.insertHead(count);
+        cout<<"After InserHead Change"<<endl;
+        list.print();
+    }
+    
     return 0;
 }
