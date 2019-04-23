@@ -3,7 +3,7 @@ Target:
     [x] 单链表反转
     [ ] 链表中环的检测
     [ ] 两个有序链表的合并
-    [ ] 删除链表倒数第n个节点
+    [x] 删除链表倒数第n个节点
     [ ] 求链表的中间节点
     [ ] LRU算法
 */
@@ -46,13 +46,12 @@ SList::~SList()
 {
     this->MaxSize = 0;
     this->length = 0;
-    ListNode * index;
-    do{
-        index = this->head;
+    ListNode * index = this->head;
+    while (this->head != NULL){
         this->head = index->next;
         delete index;
-
-    }while(this->head != NULL);
+        index = this->head;
+    };
 }
 
 void SList::deleteElem(ListNode ** current)
@@ -117,26 +116,21 @@ void SList::reversal()
 void SList::deleteDescOrder(int order)
 {
     ListNode * pre = this->head;
-    ListNode * tmp;
-    int count = this->length - order - 1;
-    if (count < -1) return ;
-    while(count > 0) {
+    int count = this->length - order;
+    if (count <= 0) {
+        this->head = this->head->next;
+        delete pre;
+        this->length-= 1;
+        return ;
+    }
+    while (count > 1) {
         pre = pre->next;
-        count -=1;
+        count -= 1;
     }
 
-    if (count == -1) {
-        tmp = this->head;
-        if(this->length == 1){
-            this->head = NULL;
-        }else{
-            this->head= this->head->next;
-        }
-    }else{
-        tmp = pre->next;
-        pre->next = pre->next->next;
-    }
-    delete tmp;
+    ListNode * current =  pre->next;
+    pre->next = pre->next->next;
+    delete current;
     this->length -= 1;
 }
 
@@ -158,10 +152,13 @@ int main(int argc, char const *argv[])
         list.insertHead(num++);
     }
 
-    // list.print();
-
-    list.deleteDescOrder(1);
+    cout<< "Current SList \t";
+    list.print();
+    cout<<"please insert delete postion"<<endl;
+    cin>>count;
+    list.deleteDescOrder(count);
     // list.reversal();
-    // list.print();
+    cout<<"After Change\t";
+    list.print();
     return 0;
 }
