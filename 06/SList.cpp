@@ -4,7 +4,7 @@ Target:
     [ ] 链表中环的检测
     [ ] 两个有序链表的合并
     [x] 删除链表倒数第n个节点
-    [ ] 求链表的中间节点
+    [x] 求链表的中间节点
     [ ] LRU算法
 */
 #include <iostream>
@@ -27,6 +27,8 @@ class SList {
     void deleteDescOrder(int order);
     void reversal();
     void print();
+    bool isHoop();
+    ListNode * findMid();
   private:
     void deleteElem(ListNode ** current);
     int MaxSize;
@@ -111,8 +113,27 @@ void SList::reversal()
         first->next = NULL;
     }
 }
+bool SList::isHoop()
+{
+    // ListNode * 
 
-//TODO: hava a bug
+}
+
+ListNode * SList::findMid()
+{
+    ListNode * slow = this->head;
+    ListNode * fast = this->head;
+    while(fast){
+        fast = fast->next;
+        if (fast && fast->next) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+    }
+    return slow;
+
+}
+
 void SList::deleteDescOrder(int order)
 {
     ListNode * pre = this->head;
@@ -152,13 +173,18 @@ int main(int argc, char const *argv[])
         list.insertHead(num++);
     }
 
-    cout<< "Current SList \t";
+    cout<< "Current SList \n";
     list.print();
-    cout<<"please insert delete postion"<<endl;
-    cin>>count;
-    list.deleteDescOrder(count);
-    // list.reversal();
-    cout<<"After Change\t";
-    list.print();
+    // 测试逆序删除
+    // cout<<"please insert delete postion"<<endl;
+    // cin>>count;
+    // list.deleteDescOrder(count);
+    // // list.reversal();
+    // cout<<"After Change\t";
+    // list.print();
+
+    // 测试查找中点
+    ListNode * mid = list.findMid();
+    cout<< "Middle Node Value :" << mid->date<<endl;
     return 0;
 }
