@@ -26,8 +26,9 @@ class SList {
     ListNode * find(DateType date);
     void deleteDescOrder(int order);
     void reversal();
+    void reversal_new();
     void print();
-    bool isHoop();
+    bool isHoop(bool);
     ListNode * findMid();
   private:
     void deleteElem(ListNode ** current);
@@ -64,8 +65,6 @@ void SList::deleteElem(ListNode ** current)
     this->length -= 1;
 }
 
-
-
 ListNode * SList::find(DateType date)
 {
     ListNode * tmp = this->head;
@@ -87,6 +86,7 @@ void SList::print()
         tmp = tmp->next;
     }
     cout<<endl;
+    cout<<"SList length :"<< this->length<<endl;
 }
 
 void SList::reversal()
@@ -104,17 +104,62 @@ void SList::reversal()
         first->next = NULL;
     }
 }
-bool SList::isHoop()
-{
-    // ListNode * 
 
+void SList::reversal_new()
+{
+    ListNode * current = this->head;
+    ListNode * pre = this->head;
+    ListNode * next;
+    while (current) {
+        next = current->next;
+        current->next = pre;
+        pre = current;
+        current = next;
+    }
+    if (this->head) {
+        this->head->next = NULL;
+        this->head = pre;
+    }
+}
+
+bool SList::isHoop(bool type = false)
+{
+    if (type) {
+        ListNode * slow = this->head;
+        ListNode * fast = this->head;
+        while (fast) {
+            fast = fast->next;
+            if(fast) {
+                fast = fast->next;
+                slow = slow->next;
+            }
+            if (slow == fast) {
+                return true;
+            }
+        }
+        return false;
+    } else {
+        //使用length 属性
+        ListNode * current = this->head;
+        ListNode * next = this->head;
+        int count = 0;
+        while (next){
+            if (count > this->length){
+                return true;
+            }
+            count += 1;
+            next = next->next;
+        }
+        return false;
+
+    }
 }
 
 ListNode * SList::findMid()
 {
     ListNode * slow = this->head;
     ListNode * fast = this->head;
-    while(fast){
+    while (fast){
         fast = fast->next;
         if (fast && fast->next) {
             slow = slow->next;
@@ -197,6 +242,9 @@ int main(int argc, char const *argv[])
 
     cout<< "Current SList \n";
     list.print();
+    cout << "After reversal" <<endl;
+    list.reversal_new();
+    list.print();
     // 测试逆序删除
     // cout<<"please insert delete postion"<<endl;
     // cin>>count;
@@ -210,12 +258,12 @@ int main(int argc, char const *argv[])
     // cout<< "Middle Node Value :" << mid->date<<endl;
 
     // 测试LRU算法
-    while(1) {
-        cin>>count;
-        list.insertHead(count);
-        cout<<"After InserHead Change"<<endl;
-        list.print();
-    }
+    // while(1) {
+    //     cin>>count;
+    //     list.insertHead(count);
+    //     cout<<"After InserHead Change"<<endl;
+    //     list.print();
+    // }
     
     return 0;
 }
