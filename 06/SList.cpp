@@ -1,7 +1,7 @@
 /*
 Target:
     [x] 单链表反转
-    [ ] 链表中环的检测
+    [x] 链表中环的检测
     [ ] 两个有序链表的合并
     [x] 删除链表倒数第n个节点
     [x] 求链表的中间节点
@@ -14,6 +14,7 @@ typedef int DateType;
 struct ListNode {
     DateType date;
     ListNode * next;
+    ListNode(DateType date) : date(date), next(NULL) {}
 };
 
 class SList {
@@ -30,8 +31,10 @@ class SList {
     void print();
     bool isHoop(bool);
     ListNode * findMid();
+    void deleteElem(ListNode * current);
+    void deleteElements(DateType val);
+
   private:
-    void deleteElem(ListNode ** current);
     int MaxSize;
     int length;
     ListNode * head;
@@ -57,11 +60,13 @@ SList::~SList()
     };
 }
 
-void SList::deleteElem(ListNode ** current)
+// 当前替换下一个节点, 传入节点不能为末尾节点
+void SList::deleteElem(ListNode * current)
 {
-    ListNode *index = *current;
-    *current = index->next;
-    delete index;
+    ListNode *next = current->next;
+    current->date = current->next->date;
+    current->next = current->next->next;
+    delete next;
     this->length -= 1;
 }
 
@@ -161,7 +166,7 @@ ListNode * SList::findMid()
     ListNode * fast = this->head;
     while (fast){
         fast = fast->next;
-        if (fast && fast->next) {
+        if (fast) {
             slow = slow->next;
             fast = fast->next;
         }
@@ -215,11 +220,28 @@ int SList::insertHead(DateType date)
     }
     // 插入首节点
     tmp = this->head;
-    this->head = new ListNode;
-    this->head->date = date;
+    this->head = new ListNode(date);
     this->head->next = tmp;
     this->length += 1;
     return count;
+}
+
+void SList::deleteElements(DateType val) {
+        ListNode * current = new ListNode(0);
+        ListNode * tmp,*first = current;
+        current->next = this->head;
+        while(current->next) {
+            if (current->next->date == val) {
+                tmp = current->next;
+                current->next= tmp->next;
+                delete tmp;
+            }else {
+                current = current->next;
+            }
+        }
+        this->head = first->next;
+        this->length -= 1;
+        delete first;
 }
 
 int main(int argc, char const *argv[])
@@ -239,12 +261,19 @@ int main(int argc, char const *argv[])
     while(num < count) {
         list.insertHead(num++);
     }
+    num = 0;
+    while(num < count) {
+        list.insertHead(num++);
+    }
 
     cout<< "Current SList \n";
     list.print();
-    cout << "After reversal" <<endl;
-    list.reversal_new();
+    list.deleteElements(0);
     list.print();
+    //  测试逆序
+    // cout << "After reversal" <<endl;
+    // list.reversal_new();
+    // list.print();
     // 测试逆序删除
     // cout<<"please insert delete postion"<<endl;
     // cin>>count;
