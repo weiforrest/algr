@@ -2,7 +2,7 @@
 Target:
     [x] 单链表反转
     [x] 链表中环的检测
-    [ ] 两个有序链表的合并
+    [x] 两个有序链表的合并
     [x] 删除链表倒数第n个节点
     [x] 求链表的中间节点
     [x] LRU算法
@@ -22,7 +22,7 @@ class SList {
     SList();
     ~SList();
     bool isFull();
-    
+    static ListNode * merge(ListNode *, ListNode *);
     int insertHead(DateType date);
     ListNode * find(DateType date);
     void deleteDescOrder(int order);
@@ -243,6 +243,37 @@ void SList::deleteElements(DateType val) {
         this->length -= 1;
         delete first;
 }
+ListNode * SList::merge(ListNode * l1, ListNode * l2)
+{
+    ListNode * current1 = l1;
+    ListNode * current2 = l2;
+    ListNode * l3 = new ListNode(0);
+    ListNode * current3 = l3;
+    bool flag = true;
+    while(current1 || current2) {
+        if(current1) {
+            flag = true;
+            if(current2){
+                if(current1->date > currrent2->date){
+                    flag = false;
+                }
+            }
+        }else{
+            flag = false;
+        }
+        current3->next = new ListNode(flag? current1->date:current2->date);
+        current3 = current3->next;
+        if (flag) {
+           current1 = current1->next;
+        }else{
+            current2=  current2->next;
+        }
+    }
+    current3 = l3->next;
+    delete l3;
+    return current3;
+
+}
 
 int main(int argc, char const *argv[])
 {
@@ -263,6 +294,7 @@ int main(int argc, char const *argv[])
     }
     num = 0;
     while(num < count) {
+        // 不起作用，因为使用了LRU算法
         list.insertHead(num++);
     }
 
