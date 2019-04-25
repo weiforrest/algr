@@ -26,6 +26,7 @@ class SList {
     int insertHead(DateType date);
     ListNode * find(DateType date);
     void deleteDescOrder(int order);
+    void deleteDescOrder_new(int order);
     void reversal();
     void reversal_new();
     void print();
@@ -194,6 +195,27 @@ void SList::deleteDescOrder(int order)
     pre->next = pre->next->next;
     delete current;
     this->length -= 1;
+}
+
+//不知道长度的情况下
+void SList::deleteDescOrder_new(int order){
+    ListNode * slow = this->head;
+    ListNode * fast = slow,*tmp;
+    while(order-- > 0) {
+        fast = fast->next;
+    }
+    if(!fast) {
+        this->head = slow->next;
+        delete slow;
+        return ;
+    }
+    while(fast->next){
+        slow = slow->next;
+        fast = fast->next;
+    }
+    tmp = slow->next;
+    slow->next = slow->next->next;
+    delete tmp;
 }
 // LRU 算法
 int SList::insertHead(DateType date)
