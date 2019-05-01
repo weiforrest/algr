@@ -22,7 +22,8 @@ class SList {
     ~SList();
     bool isFull();
     
-    int insertHead(DateType date);
+    void insertHead(DateType date);
+    int insertHead_LRU(DateType date);
     ListNode * find(DateType date);
     void deleteDescOrder(int order);
     void reversal();
@@ -154,7 +155,7 @@ void SList::deleteDescOrder(int order)
     this->length -= 1;
 }
 // LRU 算法
-int SList::insertHead(DateType date)
+int SList::insertHead_LRU(DateType date)
 {
     ListNode * pre = this->head;
     ListNode * tmp;
@@ -183,6 +184,13 @@ int SList::insertHead(DateType date)
     this->head->next = tmp;
     this->length += 1;
     return count;
+}
+void SList::insertHead(DateType date)
+{
+    ListNode * tmp = this->head;
+    this->head = new ListNode(date);
+    this->head->next = tmp;
+    this->length += 1;
 }
 
 int main(int argc, char const *argv[])
