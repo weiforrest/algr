@@ -91,18 +91,26 @@ void SList::print()
 
 void SList::reversal()
 {
-    ListNode * first,* next,* tmp;
-    if (length > 0) {
-        first = this->head;
+    // ListNode * first,* next,* tmp;
+    // if (length > 0) {
+    //     first = this->head;
+    //     next = this->head->next;
+    //     while(next){
+    //         tmp = this->head;
+    //         this->head = next;
+    //         next = next->next;
+    //         this->head->next = tmp;
+    //     }
+    //     first->next = NULL;
+    // }
+    ListNode * next,* pre = NULL;
+    while(this->head) {
         next = this->head->next;
-        while(next){
-            tmp = this->head;
-            this->head = next;
-            next = next->next;
-            this->head->next = tmp;
-        }
-        first->next = NULL;
+        this->head->next = pre;
+        pre = this->head;
+        this->head = next;
     }
+    this->head = pre;
 }
 bool SList::isHoop()
 {
