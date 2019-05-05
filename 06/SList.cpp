@@ -14,6 +14,7 @@ typedef int DateType;
 struct ListNode {
     DateType date;
     ListNode * next;
+    ListNode(DateType date) : date(date) ,next (NULL) {}
 };
 
 class SList {
@@ -30,6 +31,7 @@ class SList {
     void print();
     bool isHoop();
     ListNode * findMid();
+    bool isPalindrome();
   private:
     void deleteElem(ListNode ** current);
     int MaxSize;
@@ -179,8 +181,7 @@ int SList::insertHead_LRU(DateType date)
     }
     // 插入首节点
     tmp = this->head;
-    this->head = new ListNode;
-    this->head->date = date;
+    this->head = new ListNode(date);
     this->head->next = tmp;
     this->length += 1;
     return count;
@@ -191,6 +192,46 @@ void SList::insertHead(DateType date)
     this->head = new ListNode(date);
     this->head->next = tmp;
     this->length += 1;
+}
+
+bool SList::isPalindrome() {
+    ListNode * fast = this->head,*slow = this->head,*next,*pre = NULL;
+    bool flag;
+    //找到链表中点
+    while(fast){
+        fast = fast->next;
+        flag = false;
+        if(fast) {
+            fast = fast->next;
+            flag = true;
+            //反转慢指针
+            next = slow->next;
+            slow->next = pre;
+            pre = slow;
+            slow = next;     //slow 指向下一个未反转节点
+        }
+    }
+    fast = slow->next;
+    if (flag) { //奇数
+        next = slow;
+        slow = pre;
+        pre = slow; //pre 指向中点
+        
+    } else { //偶数
+        slow->next = pre;
+        pre = fast;
+    }
+    flag = true;
+    while(slow) {//反转回去
+        if(slow->date != fast->date) flag = false;
+        fast = fast->next;
+        
+        next = slow->next;
+        slow->next = pre;
+        pre = slow;
+        slow = next;
+    }
+    return flag;
 }
 
 int main(int argc, char const *argv[])
@@ -210,9 +251,13 @@ int main(int argc, char const *argv[])
     while(num < count) {
         list.insertHead(num++);
     }
+    while(num > 0) {
+        list.insertHead(--num);
+    }
 
     cout<< "Current SList \n";
     list.print();
+    list.isPalindrome();
     // 测试逆序删除
     // cout<<"please insert delete postion"<<endl;
     // cin>>count;
@@ -226,12 +271,12 @@ int main(int argc, char const *argv[])
     // cout<< "Middle Node Value :" << mid->date<<endl;
 
     // 测试LRU算法
-    while(1) {
-        cin>>count;
-        list.insertHead(count);
-        cout<<"After InserHead Change"<<endl;
-        list.print();
-    }
+    // while(1) {
+    //     cin>>count;
+    //     list.insertHead(count);
+    //     cout<<"After InserHead Change"<<endl;
+    //     list.print();
+    // }
     
     return 0;
 }
