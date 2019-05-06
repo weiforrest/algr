@@ -14,7 +14,7 @@ typedef int DateType;
 struct ListNode {
     DateType date;
     ListNode * next;
-    ListNode(DateType date) : date(date), next(NULL) {}
+    ListNode(DateType date) : date(date) ,next (NULL) {}
 };
 
 class SList {
@@ -23,7 +23,8 @@ class SList {
     ~SList();
     bool isFull();
     static ListNode * merge(ListNode *, ListNode *);
-    int insertHead(DateType date);
+    void insertHead(DateType date);
+    int insertHead_LRU(DateType date);
     ListNode * find(DateType date);
     void deleteDescOrder(int order);
     void deleteDescOrder_new(int order);
@@ -31,10 +32,12 @@ class SList {
     void reversal_new();
     void print();
     bool isHoop(bool);
-    ListNode * findMid();
+    ListNode * findMid_before();
+    ListNode * findMid_after();
     void deleteElem(ListNode * current);
     void deleteElements(DateType val);
 
+    bool isPalindrome();
   private:
     int MaxSize;
     int length;
@@ -97,18 +100,26 @@ void SList::print()
 
 void SList::reversal()
 {
-    ListNode * first,* next,* tmp;
-    if (length > 0) {
-        first = this->head;
+    // ListNode * first,* next,* tmp;
+    // if (length > 0) {
+    //     first = this->head;
+    //     next = this->head->next;
+    //     while(next){
+    //         tmp = this->head;
+    //         this->head = next;
+    //         next = next->next;
+    //         this->head->next = tmp;
+    //     }
+    //     first->next = NULL;
+    // }
+    ListNode * next,* pre = NULL;
+    while(this->head) {
         next = this->head->next;
-        while(next){
-            tmp = this->head;
-            this->head = next;
-            next = next->next;
-            this->head->next = tmp;
-        }
-        first->next = NULL;
+        this->head->next = pre;
+        pre = this->head;
+        this->head = next;
     }
+    this->head = pre;
 }
 
 void SList::reversal_new()
@@ -161,13 +172,26 @@ bool SList::isHoop(bool type = false)
     }
 }
 
-ListNode * SList::findMid()
+//  如果是为偶数，返回的节点为后一个
+ListNode * SList::findMid_after()
 {
     ListNode * slow = this->head;
     ListNode * fast = this->head;
-    while (fast){
+    while (fast && fast->next){
+        fast = fast->next->next;
+        slow = slow->next;
+    }
+    return slow;
+
+}
+//  如果是为偶数，返回的节点为后一个
+ListNode * SList::findMid_before()
+{
+    ListNode * slow = this->head;
+    ListNode * fast = this->head;
+    while (fast && fast->next){
         fast = fast->next;
-        if (fast) {
+        if (fast->next) {
             slow = slow->next;
             fast = fast->next;
         }
@@ -218,7 +242,7 @@ void SList::deleteDescOrder_new(int order){
     delete tmp;
 }
 // LRU 算法
-int SList::insertHead(DateType date)
+int SList::insertHead_LRU(DateType date)
 {
     ListNode * pre = this->head;
     ListNode * tmp;
@@ -246,6 +270,54 @@ int SList::insertHead(DateType date)
     this->head->next = tmp;
     this->length += 1;
     return count;
+}
+
+void SList::insertHead(DateType date)
+{
+    ListNode * tmp = this->head;
+    this->head = new ListNode(date);
+    this->head->next = tmp;
+    this->length += 1;
+}
+
+bool SList::isPalindrome() {
+    ListNode * fast = this->head,*slow = this->head,*next,*pre = NULL;
+    bool flag;
+    //找到链表中点
+    while(fast && fast->next){
+        fast = fast->next;
+        if(fast->next) {
+            flag = false; // 奇数
+            fast = fast->next;
+            //反转慢指针
+            next = slow->next;
+            slow->next = pre;
+            pre = slow;
+            slow = next;     //slow 指向下一个未反转节点
+        }else {
+            flag = true;
+            break;
+        }
+    }
+    fast = slow->next;
+    if (!flag) { //奇数
+        next = slow;
+        slow = pre;
+        pre = next; //pre 指向中点
+    } else { //偶数
+        slow->next = pre;
+        pre = fast;
+    }
+    flag = true;
+    while(slow) {//反转回去
+        if(slow->date != fast->date) flag = false;
+        fast = fast->next;
+        next = slow->next;
+        slow->next = pre;
+        pre = slow;
+        slow = next;
+    }
+    return flag;
 }
 
 void SList::deleteElements(DateType val) {
@@ -276,7 +348,7 @@ ListNode * SList::merge(ListNode * l1, ListNode * l2)
         if(current1) {
             flag = true;
             if(current2){
-                if(current1->date > currrent2->date){
+                if(current1->date > current2->date){
                     flag = false;
                 }
             }
@@ -314,20 +386,26 @@ int main(int argc, char const *argv[])
     while(num < count) {
         list.insertHead(num++);
     }
-    num = 0;
-    while(num < count) {
-        // 不起作用，因为使用了LRU算法
-        list.insertHead(num++);
+    while(num > 0) {
+        list.insertHead(--num);
     }
 
     cout<< "Current SList \n";
     list.print();
-    list.deleteElements(0);
-    list.print();
+    // list.deleteElements(0);
+    // list.print();
     //  测试逆序
     // cout << "After reversal" <<endl;
     // list.reversal_new();
     // list.print();
+
+    // 测试回文
+    if( list.isPalindrome()) {
+        cout << "Is palindrome" <<endl;
+    } else {
+        cout << "Is not palindrome" <<endl;
+    }
+    list.print();
     // 测试逆序删除
     // cout<<"please insert delete postion"<<endl;
     // cin>>count;
@@ -337,8 +415,12 @@ int main(int argc, char const *argv[])
     // list.print();
 
     // 测试查找中点
-    // ListNode * mid = list.findMid();
+    // ListNode * mid = list.findMid_before();
+    // if (mid ) {
     // cout<< "Middle Node Value :" << mid->date<<endl;
+    // } else{
+    //     cout << "SList is empty"<<endl;
+    // }
 
     // 测试LRU算法
     // while(1) {
