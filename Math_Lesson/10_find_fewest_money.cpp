@@ -1,6 +1,7 @@
 /*
  * 程序员的数学基础课第十节思考题
  * 根据给定的硬币面值，计算最少硬币个数
+ *
  */
 
 #include <iostream>
@@ -10,21 +11,14 @@ using namespace std;
 
 int min(int *d, int length)
 {
-  int min = 0;
+  int min = *d;
   bool find = false;
-  for(int i=0;i<length;i++){
-    if(*(d+i) !=-1) {
-      if(!find){
-        min = *(d+i);
-        find = true;
-      }else{
+  for(int i=1;i<length;i++){
         if(min > *(d+i)) {
           min = *(d+i);
         }
-      }
-    }
   }
-  return find ? min:-1;
+  return min;
 }
 
 
@@ -50,13 +44,13 @@ int find_few_money(vector<int> &coins, int money)
     for(int j=0;j<length;j++) {
       
       int coin = i+1;
-        if(coins[j]> coin) { //当一枚当前面值的硬币表示不了时
-          d[i][j] = -1;
+        if(coins[j]> coin) { //当一枚当前面值的硬币表示不了时,使用一个极大值
+          d[i][j] = money;
         } else if(coins[j] == coin){
           d[i][j] = 1;
         } else {
-          if(f[coin-coins[j]-1] == -1) {
-            d[i][j] = -1;
+          if(f[coin-coins[j]-1] == money) {  //找不到等值的组合
+            d[i][j] = money;
           }else{
             d[i][j] =f[coin-coins[j]-1]+1;
           }
@@ -72,7 +66,7 @@ int find_few_money(vector<int> &coins, int money)
 int main()
 {
   vector<int> coins = {2,3,7};
-  int money = 14;
+  int money = 100;
 
   int result = find_few_money(coins,money);
   return result;
